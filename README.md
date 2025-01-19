@@ -4,7 +4,8 @@
 #include <iomanip>
 using namespace std;
 
-struct Task {
+struct Task
+{
     int id;
     string description;
     string dueDate;
@@ -12,17 +13,18 @@ struct Task {
     bool completed;
 };
 
-vector<Task> tasks;
+vector <Task> tasks;
 int nextId = 1;
 
 // Add a new task
-void addTask(const string& description, const string& dueDate, const string& priority) {
-    tasks.push_back({nextId++, description, dueDate, priority, false});
+void addTask (const string& description, const string& dueDate, const string& priority) 
+{
+    tasks.push_back ({nextId++, description, dueDate, priority, false});
     cout << "Task added successfully!" << endl;
 }
 
 // Edit an existing task
-void editTask(int id, const string& newDescription, const string& newDueDate, const string& newPriority) {
+void editTask (int id, const string& newDescription, const string& newDueDate, const string& newPriority) {
     for (auto& task : tasks) {
         if (task.id == id) {
             task.description = newDescription;
@@ -36,15 +38,15 @@ void editTask(int id, const string& newDescription, const string& newDueDate, co
 }
 
 // Delete a task
-void deleteTask(int id) {
-    tasks.erase(remove_if(tasks.begin(), tasks.end(), [id](Task& task) {
+void deleteTask (int id) {
+    tasks.erase(remove_if(tasks.begin(), tasks.end(), [id] (Task& task) {
         return task.id == id;
-    }), tasks.end());
+    }), tasks.end() );
     cout << "Task deleted successfully!" << endl;
 }
 
 // Mark a task as complete
-void completeTask(int id) {
+void completeTask (int id) {
     for (auto& task : tasks) {
         if (task.id == id) {
             task.completed = true;
@@ -56,7 +58,8 @@ void completeTask(int id) {
 }
 
 // Display tasks
-void displayTasks(bool onlyPending = false) {
+void displayTasks (bool onlyPending = false) 
+{
     // Header
     cout << left << setw(5) << "ID"
          << setw(30) << "Description"
@@ -66,7 +69,8 @@ void displayTasks(bool onlyPending = false) {
     cout << "---------------------------------------------------------------" << endl;
 
     // Display tasks
-    for (const auto& task : tasks) {
+    for (const auto& task : tasks) 
+    {
         if (onlyPending && task.completed) continue; // Skip completed tasks if onlyPending is true
 
         cout << left << setw(5) << task.id
@@ -78,13 +82,14 @@ void displayTasks(bool onlyPending = false) {
 }
 
 // Filter tasks by priority
-void filterByPriority(const string& priority) {
+void filterByPriority(const string& priority) 
+{
     cout << "ID\tDescription\tDue Date\tPriority\tCompleted" << endl;
     cout << "-----------------------------------------------------------" << endl;
     for (const auto& task : tasks) {
-        if (task.priority == priority) {
-            cout << task.id << "\t" << task.description << "\t" << task.dueDate << "\t" << task.priority << "\t"
-                 << (task.completed ? "Yes" : "No") << endl;
+    if (task.priority == priority) {
+    cout << task.id << "\t" << task.description << "\t" << task.dueDate << "\t" << task.priority << "\t"
+        << (task.completed ? "Yes" : "No") << endl;
         }
     }
 }
@@ -172,8 +177,8 @@ int main() {
                 break;
             default:
                 cout << "Invalid choice! Try again." << endl;
-        }
-    } while (choice != 8);
+          }
+          } while (choice != 8);
 
     return 0;
 }
