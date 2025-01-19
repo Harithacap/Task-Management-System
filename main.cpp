@@ -1,179 +1,194 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <iomanip>
-using namespace std;
+#include <string>
 
 struct Task {
-    int id;
-    string description;
-    string dueDate;
-    string priority;
-    bool completed;
+    std::string title;
+    std::string dueDate;
+    int priority; // 1 (High), 2 (Medium), 3 (Low)
+    bool isComplete;
+
+    Task(std::string t, std::string d, int p)
+        : title(t), dueDate(d), priority(p), isComplete(false) {}
 };
 
-vector<Task> tasks;
-int nextId = 1;
+std::vector<Task> tasks;
 
-// Add a new task
-void addTask(const string& description, const string& dueDate, const string& priority) {
-    tasks.push_back({nextId++, description, dueDate, priority, false});
-    cout << "Task added successfully!" << endl;
-}
+// Function prototypes
+void addTask();
+void editTask();
+void deleteTask();
+void listTasks();
+void markTaskComplete();
+void filterTasks();
+void sortTasks();
 
-// Edit an existing task
-void editTask(int id, const string& newDescription, const string& newDueDate, const string& newPriority) {
-    for (auto& task : tasks) {
-        if (task.id == id) {
-            task.description = newDescription;
-            task.dueDate = newDueDate;
-            task.priority = newPriority;
-            cout << "Task updated successfully!" << endl;
-            return;
-        }
-    }
-    cout << "Task not found!" << endl;
-}
-
-// Delete a task
-void deleteTask(int id) {
-    tasks.erase(remove_if(tasks.begin(), tasks.end(), [id](Task& task) {
-        return task.id == id;
-    }), tasks.end());
-    cout << "Task deleted successfully!" << endl;
-}
-
-// Mark a task as complete
-void completeTask(int id) {
-    for (auto& task : tasks) {
-        if (task.id == id) {
-            task.completed = true;
-            cout << "Task marked as complete!" << endl;
-            return;
-        }
-    }
-    cout << "Task not found!" << endl;
-}
-
-// Display tasks
-void displayTasks(bool onlyPending = false) {
-    // Header
-    cout << left << setw(5) << "ID"
-         << setw(30) << "Description"
-         << setw(15) << "Due Date"
-         << setw(10) << "Priority"
-         << setw(10) << "Completed" << endl;
-    cout << "---------------------------------------------------------------" << endl;
-
-    // Display tasks
-    for (const auto& task : tasks) {
-        if (onlyPending && task.completed) continue; // Skip completed tasks if onlyPending is true
-
-        cout << left << setw(5) << task.id
-             << setw(30) << task.description
-             << setw(15) << task.dueDate
-             << setw(10) << task.priority
-             << setw(10) << (task.completed ? "Yes" : "No") << endl;
-    }
-}
-
-// Filter tasks by priority
-void filterByPriority(const string& priority) {
-    cout << "ID\tDescription\tDue Date\tPriority\tCompleted" << endl;
-    cout << "-----------------------------------------------------------" << endl;
-    for (const auto& task : tasks) {
-        if (task.priority == priority) {
-            cout << task.id << "\t" << task.description << "\t" << task.dueDate << "\t" << task.priority << "\t"
-                 << (task.completed ? "Yes" : "No") << endl;
-        }
-    }
-}
-// Main menu
 int main() {
-    // Example data
-    tasks = {
-        {1, "Complete C++ project", "2025-01-15", "High", false},
-        {2, "Buy groceries", "2025-01-16", "Medium", false},
-        {3, "Call John", "2025-01-14", "Low", true},
-        {4, "Attend team meeting", "2025-01-14", "High", false},
-        {5, "Pay electricity bill", "2025-01-18", "Medium", false},
-        {6, "Prepare presentation", "2025-01-20", "High", false},
-        {7, "Plan weekend trip", "2025-01-17", "Low", false},
-        {8, "Clean the house", "2025-01-19", "Medium", false},
-        {9, "Fix the car", "2025-01-21", "High", false},
-        {10, "Visit the doctor", "2025-01-22", "Medium", false},
-    };
-
     int choice;
     do {
-        cout << "\nTask Management System\n";
-        cout << "1. Add Task\n2. Edit Task\n3. Delete Task\n4. Mark Task as Complete\n";
-        cout << "5. Display All Tasks\n6. Display Pending Tasks\n7. Filter by Priority\n8. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+        std::cout << "\nTask Management System\n";
+        std::cout << "1. Add Task\n";
+        std::cout << "2. Edit Task\n";
+        std::cout << "3. Delete Task\n";
+        std::cout << "4. List Tasks\n";
+        std::cout << "5. Mark Task as Complete\n";
+        std::cout << "6. Filter Tasks\n";
+        std::cout << "7. Sort Tasks\n";
+        std::cout << "8. Exit\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
 
         switch (choice) {
-            case 1: {
-                string description, dueDate, priority;
-                cout << "Enter task description: ";
-                cin.ignore();
-                getline(cin, description);
-                cout << "Enter due date (YYYY-MM-DD): ";
-                cin >> dueDate;
-                cout << "Enter priority (High/Medium/Low): ";
-                cin >> priority;
-                addTask(description, dueDate, priority);
-                break;
-            }
-            case 2: {
-                int id;
-                string newDescription, newDueDate, newPriority;
-                cout << "Enter task ID to edit: ";
-                cin >> id;
-                cout << "Enter new description: ";
-                cin.ignore();
-                getline(cin, newDescription);
-                cout << "Enter new due date (YYYY-MM-DD): ";
-                cin >> newDueDate;
-                cout << "Enter new priority (High/Medium/Low): ";
-                cin >> newPriority;
-                editTask(id, newDescription, newDueDate, newPriority);
-                break;
-            }
-            case 3: {
-                int id;
-                cout << "Enter task ID to delete: ";
-                cin >> id;
-                deleteTask(id);
-                break;
-            }
-            case 4: {
-                int id;
-                cout << "Enter task ID to mark as complete: ";
-                cin >> id;
-                completeTask(id);
-                break;
-            }
-            case 5:
-                displayTasks();
-                break;
-            case 6:
-                displayTasks(true);
-                break;
-            case 7: {
-                string priority;
-                cout << "Enter priority to filter by (High/Medium/Low): ";
-                cin >> priority;
-                filterByPriority(priority);
-                break;
-            }
-            case 8:
-                cout << "Exiting Task Management System. Goodbye!" << endl;
-                break;
-            default:
-                cout << "Invalid choice! Try again." << endl;
+            case 1: addTask(); break;
+            case 2: editTask(); break;
+            case 3: deleteTask(); break;
+            case 4: listTasks(); break;
+            case 5: markTaskComplete(); break;
+            case 6: filterTasks(); break;
+            case 7: sortTasks(); break;
+            case 8: std::cout << "Exiting...\n"; break;
+            default: std::cout << "Invalid choice! Try again.\n";
         }
     } while (choice != 8);
 
     return 0;
 }
+
+void addTask() {
+    std::string title, dueDate;
+    int priority;
+    std::cout << "Enter task title: ";
+    std::cin.ignore();
+    std::getline(std::cin, title);
+    std::cout << "Enter due date (YYYY-MM-DD): ";
+    std::cin >> dueDate;
+    std::cout << "Enter priority (1=High, 2=Medium, 3=Low): ";
+    std::cin >> priority;
+
+    tasks.emplace_back(title, dueDate, priority);
+    std::cout << "Task added successfully!\n";
+}
+
+void editTask() {
+    listTasks();
+    int index;
+    std::cout << "Enter task number to edit: ";
+    std::cin >> index;
+
+    if (index < 1 || index > tasks.size()) {
+        std::cout << "Invalid task number!\n";
+        return;
+    }
+
+    Task &task = tasks[index - 1];
+    std::cout << "Editing task: " << task.title << "\n";
+    std::cout << "Enter new title (or press enter to keep current): ";
+    std::cin.ignore();
+    std::string title;
+    std::getline(std::cin, title);
+    if (!title.empty()) task.title = title;
+
+    std::cout << "Enter new due date (YYYY-MM-DD) or press enter to keep current: ";
+    std::string dueDate;
+    std::getline(std::cin, dueDate);
+    if (!dueDate.empty()) task.dueDate = dueDate;
+
+    std::cout << "Enter new priority (1=High, 2=Medium, 3=Low) or press enter to keep current: ";
+    std::string priorityStr;
+    std::getline(std::cin, priorityStr);
+    if (!priorityStr.empty()) task.priority = std::stoi(priorityStr);
+
+    std::cout << "Task updated successfully!\n";
+}
+
+void deleteTask() {
+    listTasks();
+    int index;
+    std::cout << "Enter task number to delete: ";
+    std::cin >> index;
+
+    if (index < 1 || index > tasks.size()) {
+        std::cout << "Invalid task number!\n";
+        return;
+    }
+
+    tasks.erase(tasks.begin() + index - 1);
+    std::cout << "Task deleted successfully!\n";
+}
+
+void listTasks() {
+    if (tasks.empty()) {
+        std::cout << "No tasks available.\n";
+        return;
+    }
+
+    for (size_t i = 0; i < tasks.size(); ++i) {
+        std::cout << i + 1 << ". " << tasks[i].title
+                  << " [Priority: " << tasks[i].priority
+                  << ", Due: " << tasks[i].dueDate
+                  << ", Complete: " << (tasks[i].isComplete ? "Yes" : "No") << "]\n";
+    }
+}
+
+void markTaskComplete() {
+    listTasks();
+    int index;
+    std::cout << "Enter task number to mark as complete: ";
+    std::cin >> index;
+
+    if (index < 1 || index > tasks.size()) {
+        std::cout << "Invalid task number!\n";
+        return;
+    }
+
+    tasks[index - 1].isComplete = true;
+    std::cout << "Task marked as complete!\n";
+}
+
+void filterTasks() {
+    int filter;
+    std::cout << "Filter by: 1. Complete, 2. Incomplete, 3. Priority\n";
+    std::cout << "Enter your choice: ";
+    std::cin >> filter;
+
+    if (filter == 1 || filter == 2) {
+        bool showComplete = (filter == 1);
+        for (const auto &task : tasks) {
+            if (task.isComplete == showComplete) {
+                std::cout << task.title << " [Priority: " << task.priority
+                          << ", Due: " << task.dueDate << "]\n";
+            }
+        }
+    } else if (filter == 3) {
+        int priority;
+        std::cout << "Enter priority to filter (1=High, 2=Medium, 3=Low): ";
+        std::cin >> priority;
+        for (const auto &task : tasks) {
+            if (task.priority == priority) {
+                std::cout << task.title << " [Due: " << task.dueDate << "]\n";
+            }
+        }
+    } else {
+        std::cout << "Invalid filter choice!\n";
+    }
+}
+
+void sortTasks() {
+    std::cout << "Sort by: 1. Due Date, 2. Priority\n";
+    int sortOption;
+    std::cin >> sortOption;
+
+    if (sortOption == 1) {
+        std::sort(tasks.begin(), tasks.end(),
+                  [](const Task &a, const Task &b) { return a.dueDate < b.dueDate; });
+        std::cout << "Tasks sorted by due date!\n";
+    } else if (sortOption == 2) {
+        std::sort(tasks.begin(), tasks.end(),
+                  [](const Task &a, const Task &b) { return a.priority < b.priority; });
+        std::cout << "Tasks sorted by priority!\n";
+    } else {
+        std::cout << "Invalid sort choice!\n";
+    }
+}
+
