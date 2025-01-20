@@ -1,179 +1,208 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
-using namespace std;
-
-struct Task {
-    int id;
-    string description;
-    string dueDate;
-    string priority;
-    bool completed;
-};
-
-vector<Task> tasks;
-int nextId = 1;
-
-// Add a new task
-void addTask(const string& description, const string& dueDate, const string& priority) {
-    tasks.push_back({nextId++, description, dueDate, priority, false});
-    cout << "Task added successfully!" << endl;
-}
-
-// Edit an existing task
-void editTask(int id, const string& newDescription, const string& newDueDate, const string& newPriority) {
-    for (auto& task : tasks) {
-        if (task.id == id) {
-            task.description = newDescription;
-            task.dueDate = newDueDate;
-            task.priority = newPriority;
-            cout << "Task updated successfully!" << endl;
-            return;
-        }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
     }
-    cout << "Task not found!" << endl;
-}
-
-// Delete a task
-void deleteTask(int id) {
-    tasks.erase(remove_if(tasks.begin(), tasks.end(), [id](Task& task) {
-        return task.id == id;
-    }), tasks.end());
-    cout << "Task deleted successfully!" << endl;
-}
-
-// Mark a task as complete
-void completeTask(int id) {
-    for (auto& task : tasks) {
-        if (task.id == id) {
-            task.completed = true;
-            cout << "Task marked as complete!" << endl;
-            return;
-        }
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    cout << "Task not found!" << endl;
-}
-
-// Display tasks
-void displayTasks(bool onlyPending = false) {
-    // Header
-    cout << left << setw(5) << "ID"
-         << setw(30) << "Description"
-         << setw(15) << "Due Date"
-         << setw(10) << "Priority"
-         << setw(10) << "Completed" << endl;
-    cout << "---------------------------------------------------------------" << endl;
-
-    // Display tasks
-    for (const auto& task : tasks) {
-        if (onlyPending && task.completed) continue; // Skip completed tasks if onlyPending is true
-
-        cout << left << setw(5) << task.id
-             << setw(30) << task.description
-             << setw(15) << task.dueDate
-             << setw(10) << task.priority
-             << setw(10) << (task.completed ? "Yes" : "No") << endl;
+    h1 {
+      text-align: center;
+      color: #007bff;
     }
-}
-
-// Filter tasks by priority
-void filterByPriority(const string& priority) {
-    cout << "ID\tDescription\tDue Date\tPriority\tCompleted" << endl;
-    cout << "-----------------------------------------------------------" << endl;
-    for (const auto& task : tasks) {
-        if (task.priority == priority) {
-            cout << task.id << "\t" << task.description << "\t" << task.dueDate << "\t" << task.priority << "\t"
-                 << (task.completed ? "Yes" : "No") << endl;
-        }
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
     }
-}
-// Main menu
-int main() {
-    // Example data
-    tasks = {
-        {1, "Complete C++ project", "2025-01-15", "High", false},
-        {2, "Buy groceries", "2025-01-16", "Medium", false},
-        {3, "Call John", "2025-01-14", "Low", true},
-        {4, "Attend team meeting", "2025-01-14", "High", false},
-        {5, "Pay electricity bill", "2025-01-18", "Medium", false},
-        {6, "Prepare presentation", "2025-01-20", "High", false},
-        {7, "Plan weekend trip", "2025-01-17", "Low", false},
-        {8, "Clean the house", "2025-01-19", "Medium", false},
-        {9, "Fix the car", "2025-01-21", "High", false},
-        {10, "Visit the doctor", "2025-01-22", "Medium", false},
-    };
+    .input-group input,
+    .input-group select {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .input-group button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .input-group button:hover {
+      background-color: #0056b3;
+    }
+    #filter-options {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #filter-options button {
+      background-color: #6c757d;
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 0 5px;
+      transition: background-color 0.3s;
+    }
+    #filter-options button:hover {
+      background-color: #5a6268;
+    }
+    .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      transition: box-shadow 0.3s;
+    }
+    .task:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .task.completed {
+      background-color: #e8f5e9;
+      color: #388e3c;
+      text-decoration: line-through;
+    }
+    .task strong {
+      color: #007bff;
+    }
+    .buttons button {
+      background-color: #17a2b8;
+      color: #fff;
+      border: none;
+      padding: 8px 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .buttons button:hover {
+      background-color: #138496;
+    }
+    .buttons button.delete {
+      background-color: #dc3545;
+    }
+    .buttons button.delete:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Task Management System</h1>
+    <div class="input-group">
+      <input type="text" id="task-title" placeholder="Task Title">
+      <input type="date" id="task-due-date">
+      <select id="task-priority">
+        <option value="1">High</option>
+        <option value="2">Medium</option>
+        <option value="3">Low</option>
+      </select>
+      <button onclick="addTask()">Add Task</button>
+    </div>
+    <div id="filter-options">
+      <label>Filter: </label>
+      <button onclick="filterTasks('all')">All</button>
+      <button onclick="filterTasks('completed')">Completed</button>
+      <button onclick="filterTasks('incomplete')">Incomplete</button>
+    </div>
+    <div id="task-list"></div>
+  </div>
 
-    int choice;
-    do {
-        cout << "\nTask Management System\n";
-        cout << "1. Add Task\n2. Edit Task\n3. Delete Task\n4. Mark Task as Complete\n";
-        cout << "5. Display All Tasks\n6. Display Pending Tasks\n7. Filter by Priority\n8. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+  <script>
+    let tasks = [];
 
-        switch (choice) {
-            case 1: {
-                string description, dueDate, priority;
-                cout << "Enter task description: ";
-                cin.ignore();
-                getline(cin, description);
-                cout << "Enter due date (YYYY-MM-DD): ";
-                cin >> dueDate;
-                cout << "Enter priority (High/Medium/Low): ";
-                cin >> priority;
-                addTask(description, dueDate, priority);
-                break;
-            }
-            case 2: {
-                int id;
-                string newDescription, newDueDate, newPriority;
-                cout << "Enter task ID to edit: ";
-                cin >> id;
-                cout << "Enter new description: ";
-                cin.ignore();
-                getline(cin, newDescription);
-                cout << "Enter new due date (YYYY-MM-DD): ";
-                cin >> newDueDate;
-                cout << "Enter new priority (High/Medium/Low): ";
-                cin >> newPriority;
-                editTask(id, newDescription, newDueDate, newPriority);
-                break;
-            }
-            case 3: {
-                int id;
-                cout << "Enter task ID to delete: ";
-                cin >> id;
-                deleteTask(id);
-                break;
-            }
-            case 4: {
-                int id;
-                cout << "Enter task ID to mark as complete: ";
-                cin >> id;
-                completeTask(id);
-                break;
-            }
-            case 5:
-                displayTasks();
-                break;
-            case 6:
-                displayTasks(true);
-                break;
-            case 7: {
-                string priority;
-                cout << "Enter priority to filter by (High/Medium/Low): ";
-                cin >> priority;
-                filterByPriority(priority);
-                break;
-            }
-            case 8:
-                cout << "Exiting Task Management System. Goodbye!" << endl;
-                break;
-            default:
-                cout << "Invalid choice! Try again." << endl;
-        }
-    } while (choice != 8);
+    function addTask() {
+      const title = document.getElementById('task-title').value;
+      const dueDate = document.getElementById('task-due-date').value;
+      const priority = document.getElementById('task-priority').value;
 
-    return 0;
-}
+      if (!title || !dueDate) {
+        alert('Please fill in all fields!');
+        return;
+      }
+
+      const task = {
+        title,
+        dueDate,
+        priority,
+        isComplete: false
+      };
+      tasks.push(task);
+
+      document.getElementById('task-title').value = '';
+      document.getElementById('task-due-date').value = '';
+      renderTasks();
+    }
+
+    function renderTasks(filter = 'all') {
+      const taskList = document.getElementById('task-list');
+      taskList.innerHTML = '';
+
+      let filteredTasks = tasks;
+      if (filter === 'completed') {
+        filteredTasks = tasks.filter(task => task.isComplete);
+      } else if (filter === 'incomplete') {
+        filteredTasks = tasks.filter(task => !task.isComplete);
+      }
+
+      filteredTasks.forEach((task, index) => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = `task ${task.isComplete ? 'completed' : ''}`;
+        taskDiv.innerHTML = `
+          <div>
+            <strong>${task.title}</strong> <br>
+            Due: ${task.dueDate} | Priority: ${task.priority === '1' ? 'High' : task.priority === '2' ? 'Medium' : 'Low'}
+          </div>
+          <div class="buttons">
+            <button onclick="markComplete(${index})">${task.isComplete ? 'Undo' : 'Complete'}</button>
+            <button class="delete" onclick="deleteTask(${index})">Delete</button>
+          </div>
+        `;
+        taskList.appendChild(taskDiv);
+      });
+    }
+
+    function markComplete(index) {
+      tasks[index].isComplete = !tasks[index].isComplete;
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+
+    function filterTasks(filter) {
+      renderTasks(filter);
+    }
+  </script>
+</body>
+</html>
+
